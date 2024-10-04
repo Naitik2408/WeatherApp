@@ -8,6 +8,7 @@ import fetchData from './api/fetchData';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import WeatherDashboardSkeleton from './skeleton/WeatherDashboardSkeleton';
+import fetchWeatherForCurrentLocation from './api/getCurrentLocation.js'
 
 const App = () => {
   const [weatherData, setWeatherData] = useState(null);
@@ -16,6 +17,7 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState(''); // Separate state for input
   const [loading, setLoading] = useState(true); // Track loading state
   const [tempType, setTempType] = useState(true);
+  
 
   // Function to fetch data when the location changes
   useEffect(() => {
@@ -35,6 +37,39 @@ const App = () => {
 
     fetchWeatherData();
   }, [location]); // Fetch data when location changes
+
+
+
+
+  useEffect(() => {
+    const fetchInitialWeather = async () => {
+      try {
+        const userLocation = await fetchWeatherForCurrentLocation();
+        setLocation(userLocation || 'Delhi');
+      } catch (error) {
+        console.error(error);
+        setLocation('Delhi'); // Fallback location
+      }
+    };
+  
+    fetchInitialWeather();
+  }, []);
+  
+
+  // useEffect(() => {
+  //   const fetchWeatherData = async () => {
+  //     if (location) {
+  //       const currentWeather = await fetchData('current.json', location);
+  //       const forecastWeather = await fetchData('forecast.json', location);
+  //       setWeatherData(currentWeather);
+  //       setForecastData(forecastWeather.forecast.forecastday);
+  //     }
+  //   };
+  //   fetchWeatherData();
+  // }, [location]);
+
+
+
 
   // Handle search button click
   const handleSearch = () => {
@@ -99,7 +134,7 @@ const App = () => {
               </div>
             </div>
             <div className='w-full h-32 rounded-2xl overflow-hidden mt-5'>
-              <img src="https://images.unsplash.com/photo-1525476325627-1380280dcfab?q=80&w=1992&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" className='w-full h-full object-cover' />
+              <img src="https://images.unsplash.com/photo-1466629437334-b4f6603563c5?q=80&w=1778&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" className='w-full h-full object-cover' />
             </div> 
           </>
 
@@ -180,9 +215,10 @@ const App = () => {
                 </div>
                 <div className='bg-white rounded-2xl p-5 flex flex-col gap-3'>
                   <div className='text-gray-400'>Visibility</div>
-                  <div className='flex gap-1 items-center text-gray-600'>
+                  <div className='flex gap-1 items-end text-gray-800 text-5xl font-semibold mt-4'>
                     <IoMdArrowUp />
-                    <div>{weatherData.current.vis_km} km</div>
+                    <div>{weatherData.current.vis_km} </div>
+                    <div className='text-xl'>km</div>
                   </div>
                 </div>
                 <div className='bg-white rounded-2xl p-5'>
